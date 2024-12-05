@@ -49,19 +49,19 @@ class BookController extends Controller
 
         // Kiểm tra và lưu ảnh
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
-
-            // Trả về đường dẫn ảnh vừa upload
+            // Trả lỗi nếu không có file nào được upload
             return response()->json([
-                'message' => 'Image uploaded successfully',
-                'image_path' => $imagePath
-            ], 201);
+                'message' => 'No image uploaded'
+            ], 422);
         }
 
-        // Trả lỗi nếu không có file nào được upload
+        $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
+
+        // Trả về đường dẫn ảnh vừa upload
         return response()->json([
-            'message' => 'No image uploaded'
-        ], 400);
+            'message' => 'Image uploaded successfully',
+            'image_path' => $imagePath
+        ], 201);
     }
 
     public function uploadImageBase64(Request $request)
@@ -78,10 +78,6 @@ class BookController extends Controller
             // Tách phần header base64 (nếu có)
             if (str_contains($base64Image, ';base64,')) {
                 [$type, $base64Image] = explode(';base64,', $base64Image);
-            } else {
-                return response()->json([
-                    'message' => 'Invalid base64 string format'
-                ], 400);
             }
 
             // Decode base64 thành binary

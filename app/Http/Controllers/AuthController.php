@@ -34,7 +34,8 @@ class AuthController extends Controller
         // Kiểm tra xem có thể tạo token JWT không
         try {
             // Nếu không thể tạo token thì trả về lỗi Unauthorized
-            if (!$token = JWTAuth::attempt($credentials)) {
+            $token = JWTAuth::attempt($credentials);
+            if (!$token) {
                 return response()->json(['error' => 'Unauthorized'], 401);
             }
         } catch (JWTException $e) {
