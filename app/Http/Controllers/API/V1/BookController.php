@@ -48,7 +48,7 @@ class BookController extends Controller
         ]);
 
         // Kiểm tra và lưu ảnh
-        if ($request->hasFile('image')) {
+        if (!$request->hasFile('image')) {
             // Trả lỗi nếu không có file nào được upload
             return response()->json([
                 'message' => 'No image uploaded'
