@@ -67,19 +67,19 @@ class BookController extends Controller
         }catch (ImageNotUploadedException $e){
             $code = $e->getCode();
             return response()->json([
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], $code);
         }
         catch (\Exception $e) {
             if (strpos($e->getMessage(), 'No space left on device') !== false) {
                 return response()->json([
-                    'error' => 'Unable to upload the image because the server has insufficient storage space.',
+                    'message' => 'Unable to upload the image because the server has insufficient storage space.',
                 ], 507);
             }
 
             $code = $e->getCode();
             return response()->json([
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], $code);
         }
     }
@@ -119,12 +119,12 @@ class BookController extends Controller
         } catch (\Exception $e) {
             if (strpos($e->getMessage(), 'No space left on device') !== false) {
                 return response()->json([
-                    'error' => 'Unable to upload the image because the server has insufficient storage space.',
+                    'message' => 'Unable to upload the image because the server has insufficient storage space.',
                 ], 507);
             }
 
             return response()->json([
-                'error' => $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

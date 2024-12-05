@@ -41,11 +41,11 @@ class AuthController extends Controller
             }
         }catch (Unauthorized $e) {
             // Nếu không thể tạo token thì trả về lỗi Unauthorized
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
         catch (JWTException $e) {
             // Nếu có lỗi trong quá trình tạo token thì trả về lỗi server
-            return response()->json(['error' => 'Could not create token'], 500);
+            return response()->json(['message' => 'Could not create token'], 500);
         }
 
         // Trả về token cho client
