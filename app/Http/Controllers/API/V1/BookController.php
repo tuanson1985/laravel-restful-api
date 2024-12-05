@@ -55,13 +55,22 @@ class BookController extends Controller
             ], 422);
         }
 
-        $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
+        try {
 
-        // Trả về đường dẫn ảnh vừa upload
-        return response()->json([
-            'message' => 'Image uploaded successfully',
-            'image_path' => $imagePath
-        ], 201);
+            $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
+
+            // Trả về đường dẫn ảnh vừa upload
+            return response()->json([
+                'message' => 'Image uploaded successfully',
+                'image_path' => $imagePath
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to upload image',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function uploadImageBase64(Request $request)
