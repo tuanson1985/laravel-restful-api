@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Exceptions\ImageNotUploadedException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
 use App\Http\Resources\BookResource;
@@ -47,15 +48,13 @@ class BookController extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate ảnh
         ]);
 
-        // Kiểm tra và lưu ảnh
-        if (!$request->hasFile('image')) {
-            // Trả lỗi nếu không có file nào được upload
-            return response()->json([
-                'message' => 'No image uploaded'
-            ], 422);
-        }
-
         try {
+
+            // Kiểm tra và lưu ảnh
+            if (!$request->hasFile('image')) {
+                // Trả lỗi nếu không có file nào được upload
+                throw new ImageNotUploadedException();
+            }
 
             $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
 
@@ -65,11 +64,23 @@ class BookController extends Controller
                 'image_path' => $imagePath
             ], 201);
 
-        } catch (\Exception $e) {
+        }catch (ImageNotUploadedException $e){
+            $code = $e->getCode();
             return response()->json([
-                'message' => 'Failed to upload image',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], $code);
+        }
+        catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'No space left on device') !== false) {
+                return response()->json([
+                    'error' => 'Unable to upload the image because the server has insufficient storage space.',
+                ], 507);
+            }
+
+            $code = $e->getCode();
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], $code);
         }
     }
 
@@ -106,8 +117,13 @@ class BookController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+            if (strpos($e->getMessage(), 'No space left on device') !== false) {
+                return response()->json([
+                    'error' => 'Unable to upload the image because the server has insufficient storage space.',
+                ], 507);
+            }
+
             return response()->json([
-                'message' => 'Failed to upload image',
                 'error' => $e->getMessage(),
             ], 500);
         }

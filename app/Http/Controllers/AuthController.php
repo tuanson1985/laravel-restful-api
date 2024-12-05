@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\Unauthorized;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -36,9 +37,13 @@ class AuthController extends Controller
             // Nếu không thể tạo token thì trả về lỗi Unauthorized
             $token = JWTAuth::attempt($credentials);
             if (!$token) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                throw new Unauthorized();
             }
-        } catch (JWTException $e) {
+        }catch (Unauthorized $e) {
+            // Nếu không thể tạo token thì trả về lỗi Unauthorized
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        catch (JWTException $e) {
             // Nếu có lỗi trong quá trình tạo token thì trả về lỗi server
             return response()->json(['error' => 'Could not create token'], 500);
         }
