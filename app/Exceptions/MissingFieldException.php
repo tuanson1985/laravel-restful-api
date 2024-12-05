@@ -4,12 +4,12 @@ namespace App\Exceptions;
 
 use Exception;
 
-class ImageNotUploadedException extends Exception
+class MissingFieldException extends Exception
 {
     protected $message;
     protected $code;
 
-    public function __construct($message = 'Image file not found', $code = 422)
+    public function __construct($message, $code)
     {
         parent::__construct($message, $code);
     }

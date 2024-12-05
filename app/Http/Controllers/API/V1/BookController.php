@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Exceptions\ImageNotUploadedException;
+use App\Exceptions\MissingFieldException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BookRequest;
 use App\Http\Resources\BookResource;
@@ -53,7 +53,7 @@ class BookController extends Controller
             // Kiểm tra và lưu ảnh
             if (!$request->hasFile('image')) {
                 // Trả lỗi nếu không có file nào được upload
-                throw new ImageNotUploadedException();
+                throw new MissingFieldException('Image not found',422);
             }
 
             $imagePath = $request->file('image')->store('books', 'public'); // Upload vào thư mục 'books'
@@ -64,7 +64,7 @@ class BookController extends Controller
                 'image_path' => $imagePath
             ], 201);
 
-        }catch (ImageNotUploadedException $e){
+        }catch (MissingFieldException $e){
             $code = $e->getCode();
             return response()->json([
                 'message' => $e->getMessage(),
